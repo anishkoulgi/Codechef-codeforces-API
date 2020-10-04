@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 
 import cf from './routes/codeforces';
+import cc from './routes/codechef';
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/codeforces', cf);
+app.use('/codechef', cc);
 
 const PORT = process.env.PORT || 3000;
 
