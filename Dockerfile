@@ -2,7 +2,7 @@
 
 FROM node:12-alpine AS base
 
-WORKDIR /app
+WORKDIR /usr/app
 
 #
 # Builder stage.
@@ -27,7 +27,7 @@ FROM base AS release
 ENV NODE_ENV=production
 
 ## We just need the build to execute the command
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /usr/app/node_modules ./node_modules
 COPY --from=builder /usr/app/build ./build
 
 EXPOSE 3000
