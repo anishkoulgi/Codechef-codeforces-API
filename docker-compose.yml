@@ -3,16 +3,16 @@ services:
   express:
     image: node:12-alpine
     volumes:
-      - type: bind
+      - type: bind # Bind all project files from host to container except node modules
         source: ./
         target: /usr/app
-      - type: volume
+      - type: volume # Type set to volume to isolate container node modules from host
         source: nodemodules
         target: /app/node_modules
         volume:
           nocopy: true
     working_dir: /usr/app
-    command: npm run dev
+    command: npm run dev # Running in development mode for hot reloading using nodemon
     ports:
       - '3000:3000'
     environment:

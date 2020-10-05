@@ -9,6 +9,7 @@ router.get('/:username', async (req, res) => {
     const response = await axios.get(
       `https://codeforces.com/profile/${req.params.username}`
     );
+
     const $ = cheerio.load(response.data);
     const rank = $(
       '#pageContent > div:nth-child(3) > div.userbox > div.info > div > div.user-rank > span'
@@ -38,6 +39,7 @@ router.get('/:username', async (req, res) => {
     };
     res.json(user);
   } catch (err) {
+    console.log(err);
     res.status(500).send('Some error occured');
   }
 });
