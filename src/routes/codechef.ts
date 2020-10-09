@@ -2,6 +2,8 @@ import express from 'express';
 import cheerio from 'cheerio';
 import axios from 'axios';
 
+import { getText, getTextWithSplit } from '../utils/getText';
+
 const router = express.Router();
 
 router.get('/:username', async (req, res) => {
@@ -16,56 +18,54 @@ router.get('/:username', async (req, res) => {
       'body > main > div > div > div > div > div > section.user-details > ul'
     ).each((idx, ul) => {
       const children = $(ul).children();
+      let num = $(children).length;
       children.each((i, li) => {
-        if (i !== 6) {
+        if (i !== num - 1) {
           const children = $(li).children();
           let key: any, value: any;
           children.each((i, a) => {
-            if (i) value = $(a).text().trim();
-            else key = $(a).text().trim().split(':')[0];
+            if (i) value = getText($, false, a);
+            else key = getTextWithSplit($, false, a, ':');
           });
           personalInfo[key] = value;
         }
       });
     });
     if (!personalInfo.Username) {
-      res.json({
+      res.status(404).json({
         isValid: false,
       });
     } else {
-      const globalRank = parseInt(
-        $(
-          'body > main > div > div > div > aside > div.widget.pl0.pr0.widget-rating > div > div.rating-ranks > ul > li:nth-child(1) > a > strong'
-        )
-          .text()
-          .trim()
+      const globalRank = getText(
+        $,
+        true,
+        'body > main > div > div > div > aside > div.widget.pl0.pr0.widget-rating > div > div.rating-ranks > ul > li:nth-child(1) > a > strong'
       );
 
-      const countryRank = parseInt(
-        $(
-          'body > main > div > div > div > aside > div.widget.pl0.pr0.widget-rating > div > div.rating-ranks > ul > li:nth-child(2) > a > strong'
-        ).text()
+      const countryRank = getText(
+        $,
+        true,
+        'body > main > div > div > div > aside > div.widget.pl0.pr0.widget-rating > div > div.rating-ranks > ul > li:nth-child(2) > a > strong'
       );
 
-      const codechefRating = parseInt(
-        $(
-          'body > main > div > div > div > aside > div.widget.pl0.pr0.widget-rating > div > div.rating-header.text-center > div.rating-number'
-        )
-          .text()
-          .trim()
+      const codechefRating = getText(
+        $,
+        true,
+        'body > main > div > div > div > aside > div.widget.pl0.pr0.widget-rating > div > div.rating-header.text-center > div.rating-number'
       );
 
-      const stars = parseInt(
-        $(
-          'body > main > div > div > div > div > div > section.user-details > ul > li:nth-child(1) > span > span.rating'
-        ).text()[0]
+      const stars = getText(
+        $,
+        true,
+        'body > main > div > div > div > div > div > section.user-details > ul > li:nth-child(1) > span > span.rating'
       );
 
       const maxRating = parseInt(
-        $(
+        (getText(
+          $,
+          false,
           'body > main > div > div > div > aside > div.widget.pl0.pr0.widget-rating > div > div.rating-header.text-center > small'
-        )
-          .text()
+        ) as string)
           .replace(/[()]/g, '')
           .split(' ')[2]
       );
@@ -78,9 +78,9 @@ router.get('/:username', async (req, res) => {
           let key: any = null,
             value: any = null;
           cols.each((i, td) => {
-            const ele = $(td).text().trim();
+            const ele = getText($, false, td);
 
-            if (i === 1) value = parseInt(ele.trim());
+            if (i === 1) value = parseInt(ele as string);
             else if (i === 0) key = ele;
             if (key && value) rating[key] = value;
           });
