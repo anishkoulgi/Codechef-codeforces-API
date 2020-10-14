@@ -3,10 +3,11 @@ import cheerio from 'cheerio';
 import axios from 'axios';
 
 import { getText, getTextWithSplit } from '../utils/getText';
+import { insert, cache } from '../redis-client';
 
 const router = express.Router();
 
-router.get('/:username', async (req, res) => {
+router.get('/:username', cache, async (req, res) => {
   try {
     const response = await axios.get(
       `https://codeforces.com/profile/${req.params.username}`
@@ -53,6 +54,7 @@ router.get('/:username', async (req, res) => {
         maxRating,
         isValid: true,
       };
+      insert(user, userName);
       res.json(user);
     }
   } catch (err) {

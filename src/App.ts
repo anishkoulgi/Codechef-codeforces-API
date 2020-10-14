@@ -8,7 +8,7 @@ const app = express();
 
 app.use(cors());
 
-app.get('/', (req: Request, res: Response) => {
+app.get('', (req: Request, res: Response) => {
   res.json({ msg: '🚀Welcome to Codeforchef!' });
 });
 
