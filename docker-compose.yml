@@ -7,22 +7,11 @@ services:
     ports:
       - '8000:80'
   express:
-    image: node:12-alpine
-    volumes:
-      - type: bind # Bind all project files from host to container except node modules
-        source: ./
-        target: /usr/app
-      - type: volume # Type set to volume to isolate container node modules from host
-        source: nodemodules
-        target: /app/node_modules
-        volume:
-          nocopy: true
-    working_dir: /usr/app
-    command: npm run dev # Running in development mode for hot reloading using nodemon
+    build: .
     ports:
       - '3000:3000'
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PORT=3000
       - REDIS_PORT=6379
   redis-server:
